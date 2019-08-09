@@ -7,7 +7,8 @@ const logger = require('morgan');
 const cors = require('cors');
 const path = require('path');
 
-
+const fs = require('fs');
+const filepath = require('./file.txt')
 
 app.use(bodyParser.urlencoded({ extended: false, limit: '5mb' }));
 app.use(bodyParser.json());
@@ -36,7 +37,22 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
     console.log('Inside POST')
-    console.log('----------- ',req.body)
+    console.log('----------- ', req.body)
+    res.status(200).json({error: false, message: req.body})
+})
+
+app.post('/t', (req, res) => {
+    const dbody = JSON.stringify(req.body) + "\r\n"
+    console.log(dbody)
+    fs.writeFile('./file.txt', dbody, function (err) {
+    // fs.writeFile('./fileToJson.json', req.body , function (err) {
+        if (err) {
+            return console.log(err);
+        }
+
+        res.status(200).json({ error: false, message: 'written'})
+        console.log("The file was saved!");
+    }); 
 })
 
 
