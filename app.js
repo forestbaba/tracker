@@ -6,6 +6,13 @@ const PORT = process.env.PORT || 9000;
 const logger = require('morgan');
 const cors = require('cors');
 const path = require('path');
+const http = require('http');
+
+const server = http.createServer(app);
+var io = require('socket.io')(server);
+const Socket = require('./socket')(io)
+
+
 
 const fs = require('fs');
 const filepath = require('./file.txt')
@@ -16,9 +23,11 @@ app.use(logger('dev'))
 app.use(cors())
 
 
-const db =  "mongodb://localhost/oddwise";
-mongoose.connect(db).then(() => console.log('Database is ready')).catch(
-    err => console.log(err));
+// const db = "mongodb://localhost/oddwise";
+// mongoose.connect(db).then(() => console.log('Database is ready')).catch(
+//     err => console.log(err));
+
+var io = require('socket.io')(server);
 
 app.get('/', (req, res) => {
     //res.status(200).json({ erro: false, message: 'Greetings from tracker' })
@@ -38,21 +47,21 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     console.log('Inside POST')
     console.log('----------- ', req.body)
-    res.status(200).json({error: false, message: req.body})
+    res.status(200).json({ error: false, message: req.body })
 })
 
 app.post('/t', (req, res) => {
     const dbody = JSON.stringify(req.body) + "\r\n"
     console.log(dbody)
     fs.writeFile('./file.txt', dbody, function (err) {
-    // fs.writeFile('./fileToJson.json', req.body , function (err) {
+        // fs.writeFile('./fileToJson.json', req.body , function (err) {
         if (err) {
             return console.log(err);
         }
 
-        res.status(200).json({ error: false, message: 'written'})
+        res.status(200).json({ error: false, message: 'written' })
         console.log("The file was saved!");
-    }); 
+    });
 })
 
 
